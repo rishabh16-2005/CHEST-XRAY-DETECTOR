@@ -1,0 +1,67 @@
+/* app/styles.css — Injected via st.markdown(<style>…</style>) in main.py */
+
+/* ── Global typography ──────────────────────────────────────────────────── */
+[data-testid="stAppViewContainer"] {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* ── Sidebar ─────────────────────────────────────────────────────────────── */
+[data-testid="stSidebar"] {
+    background: #f8fafc;
+    border-right: 1px solid #e2e8f0;
+}
+
+[data-testid="stSidebar"] .stRadio label {
+    font-size: 0.95rem;
+    color: #374151;
+}
+
+/* ── Upload area ─────────────────────────────────────────────────────────── */
+[data-testid="stFileUploadDropzone"] {
+    border: 2px dashed #cbd5e1 !important;
+    border-radius: 8px !important;
+    background: #f8fafc !important;
+    transition: border-color 0.2s;
+}
+
+[data-testid="stFileUploadDropzone"]:hover {
+    border-color: #2563eb !important;
+}
+
+/* ── Image captions ──────────────────────────────────────────────────────── */
+[data-testid="stImage"] figcaption {
+    text-align: center;
+    color: #64748b;
+    font-size: 0.85rem;
+    margin-top: 6px;
+}
+
+/* ── Metric tiles on performance page ────────────────────────────────────── */
+[data-testid="stMetric"] {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 12px 16px;
+}
+
+/* ── Expanders ───────────────────────────────────────────────────────────── */
+[data-testid="stExpander"] {
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+}
+
+/* ── Warning / disclaimer banner ─────────────────────────────────────────── */
+[data-testid="stAlert"] {
+    border-radius: 6px;
+}
+
+/* ── Buttons ─────────────────────────────────────────────────────────────── */
+.stButton button {
+    border-radius: 6px;
+    font-weight: 500;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+/* ── Hide Streamlit default footer and hamburger menu ────────────────────── */
+#MainMenu { visibility: hidden; }
+footer    { visibility: hidden; }

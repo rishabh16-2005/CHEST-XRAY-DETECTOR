@@ -1,0 +1,40 @@
+# --- CORE DEEPLEARNING -----------------------------------------------
+torch==2.3.0            # PyTorch - training, inference, autograd
+torchvision==0.18.0     # EfficientNet, ResNet, transforms, datasets
+
+# --- DATA SCIENCE ----------------------------------------------------
+numpy==1.26.4
+pandas==2.2.2
+Pillow==10.3.0              # Image loading (PIL. Image )
+scikit-learn==1.5.0         # AUC-ROC, confusion matrix, F1
+scipy==1.31.1               
+opencv-python-headless==4.9.0.80   # Grad-CAM overlay, image manipulation
+albunmentations==1.4.10            # Advanced augmentation (optional)
+
+# --- EXPLAINABILITY --------------------------------------------------
+grad-cam==1.5.0             # pytorch-grad-cam library (or write your own)
+
+# --- EXPERIMENT TTRACKING --------------------------------------------
+wandb==0.17.3               # Weights and Biases - loss curves, AUC plots
+
+# --- VISUALISATION ---------------------------------------------------
+matplotlib==3.9.0           # AUC curves, confusion matrice, heatmaps 
+seaborn==0.13.2             # Prettier confusion matrix plots 
+plotly==5.22.0              # Interactive charts in Streamlit 
+
+# --- STREAMLIT APP ---------------------------------------------------
+streamlit==1.36.0           # WEB UI framework
+streamlit-image-comparison==0.0.4 #side-by-side original vs heatmap slider
+
+# --- UTILITIES -------------------------------------------------------
+tqdm==4.66.4                # Progress bars in training loop
+PyYAML==6.0.1               # Config loading from config.yaml
+python-dotenv==1.0.1        # Load .env (WEB API key etc. )
+
+# --- TESTING ---------------------------------------------------------
+pytest==8.2.2
+pytest-cov==5.0.0
+
+# --- OPTIONAL - MODEL EXPORT -----------------------------------------
+onnx==1.16.1                # Export to ONNX (for CPU inference)
+onnxruntime==1.18.0         # Run ONXX on CPU without PyTorch

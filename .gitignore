@@ -1,0 +1,44 @@
+# ── Dataset (too large for git — 6GB for binary, 50GB for NIH) ────
+data/
+*.zip
+
+# ── Model checkpoints ─────────────────────────────────────────────
+checkpoints/
+*.pth
+
+# ── Environment ───────────────────────────────────────────────────
+.env
+.env.*
+*.env
+
+# ── Python ────────────────────────────────────────────────────────
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# ── Testing ───────────────────────────────────────────────────────
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+# ── Notebooks ─────────────────────────────────────────────────────
+.ipynb_checkpoints/
+
+# ── Weights & Biases ──────────────────────────────────────────────
+wandb/
+
+# ── OS ────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ── IDE ───────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
