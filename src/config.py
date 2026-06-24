@@ -30,7 +30,7 @@ class Config:
     #   DATA_ROOT = "/content/chest_xray"
     # If using Google Drive mount:
     #   DATA_ROOT = "/content/drive/MyDrive/datasets/chest_xray"
-    DATA_ROOT: str = "/content/chest_xray"
+    DATA_ROOT: str = "C:/Users/risha/chest-xray-detector/data/raw/chest_xray"
 
     # Subdirectory names (match kaggle folder layout exactly)
     TRAIN_DIR: str = "train"

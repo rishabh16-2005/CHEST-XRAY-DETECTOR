@@ -15,6 +15,7 @@ Page structure (controlled by sidebar):
 import logging
 from pathlib import Path
 
+import re
 import streamlit as st
 from PIL import Image
 
@@ -95,8 +96,9 @@ def main():
     # Inject custom CSS
     css_path = Path("app/styles.css")
     if css_path.exists():
-        st.markdown(f"<style>{css_path.read_text()}</style>", unsafe_allow_html=True)
-
+        css = css_path.read_text(encoding="utf-8")
+        css = re.sub(r"/\*.*?\*/", "", css, flags=re.DOTALL)  # strip comments
+        st.markdown(f"<style>{css}</style>", unsafe_allow_html=True) 
     render_header()
     controls = render_sidebar()
     page = controls["page"]

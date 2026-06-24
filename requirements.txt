@@ -7,9 +7,9 @@ numpy==1.26.4
 pandas==2.2.2
 Pillow==10.3.0              # Image loading (PIL. Image )
 scikit-learn==1.5.0         # AUC-ROC, confusion matrix, F1
-scipy==1.31.1               
+scipy==1.13.1               
 opencv-python-headless==4.9.0.80   # Grad-CAM overlay, image manipulation
-albunmentations==1.4.10            # Advanced augmentation (optional)
+albumentations==1.4.10            # Advanced augmentation (optional)
 
 # --- EXPLAINABILITY --------------------------------------------------
 grad-cam==1.5.0             # pytorch-grad-cam library (or write your own)
@@ -23,7 +23,7 @@ seaborn==0.13.2             # Prettier confusion matrix plots
 plotly==5.22.0              # Interactive charts in Streamlit 
 
 # --- STREAMLIT APP ---------------------------------------------------
-streamlit==1.36.0           # WEB UI framework
+streamlit==1.45.1          # WEB UI framework
 streamlit-image-comparison==0.0.4 #side-by-side original vs heatmap slider
 
 # --- UTILITIES -------------------------------------------------------

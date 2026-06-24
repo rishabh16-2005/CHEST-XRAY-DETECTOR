@@ -7,13 +7,13 @@
 
 /* ── Sidebar ─────────────────────────────────────────────────────────────── */
 [data-testid="stSidebar"] {
-    background: #f8fafc;
-    border-right: 1px solid #e2e8f0;
+    background: #1e293b;
+    border-right: 1px solid #334155;
 }
 
 [data-testid="stSidebar"] .stRadio label {
     font-size: 0.95rem;
-    color: #374151;
+    color: #e2e8f0;
 }
 
 /* ── Upload area ─────────────────────────────────────────────────────────── */

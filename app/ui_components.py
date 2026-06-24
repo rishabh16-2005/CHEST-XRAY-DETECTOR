@@ -120,13 +120,13 @@ def render_image_pair(
         st.image(
             original_pil,
             caption="Original X-Ray",
-            use_container_width=True,
+            use_container_width=True
         )
     with col2:
         st.image(
             heatmap_pil,
             caption=f"Grad-CAM — explaining: {top_class}",
-            use_container_width=True,
+            use_container_width=True
         )
 
 
