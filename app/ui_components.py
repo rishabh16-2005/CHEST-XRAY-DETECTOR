@@ -16,7 +16,7 @@ import numpy as np
 import streamlit as st
 from PIL import Image
 
-from src.config import CONFIG
+from src.config_nih import ConfigNIH as CONFIG
 
 
 # ── Header ────────────────────────────────────────────────────────────────────
@@ -27,7 +27,7 @@ def render_header() -> None:
         """
         <h1 style='margin-bottom:0'>🫁 Chest X-Ray Anomaly Detector</h1>
         <p style='color:#64748b; font-size:1.05rem; margin-top:4px'>
-          EfficientNetB3 · Grad-CAM Explainability · Binary Classification
+          EfficientNetB3 · Grad-CAM Explainability ·  NIH ChestX-ray14 · 14 Pathologies
         </p>
         <hr style='margin:12px 0 20px 0; border-color:#e2e8f0'>
         """,
@@ -62,7 +62,7 @@ def render_sidebar() -> Dict:
 
         threshold = st.slider(
             "Detection Threshold",
-            min_value=0.0, max_value=1.0, value=CONFIG.THRESHOLD, step=0.05,
+            min_value=0.0, max_value=1.0, value=CONFIG.DEFAULT_THRESHOLD, step=0.05,
             help=(
                 "Sigmoid probability above which PNEUMONIA is flagged. "
                 "Lower = more sensitive (fewer missed cases, more false alarms). "
@@ -89,7 +89,15 @@ def render_sidebar() -> Dict:
                 "plasma/inferno: purple→orange (colorblind-friendly)."
             ),
         )
-
+        # Add inside render_sidebar(), after colormap selectbox:
+        from src.config_nih import CONFIG_NIH
+        selected_class = st.selectbox(
+            "Grad-CAM class",
+            options=CONFIG_NIH.CLASS_NAMES,
+            index=6,   # default: Pneumonia (index 6)
+            help="Which pathology's heatmap to show.",
+        )
+        class_idx = CONFIG_NIH.CLASS_NAMES.index(selected_class)
         st.markdown("---")
         st.markdown(
             "<small style='color:#94a3b8'>⚠️ For research use only. "
@@ -102,6 +110,7 @@ def render_sidebar() -> Dict:
         "alpha": alpha,
         "colormap": colormap,
         "page": page,
+        "class_idx":class_idx,
     }
 
 
@@ -263,7 +272,7 @@ def render_model_performance(eval_results: Optional[Dict]) -> None:
     n_neg = eval_results.get("n_negative", "—")
     tp, tn = eval_results.get("TP", "—"), eval_results.get("TN", "—")
     fp, fn = eval_results.get("FP", "—"), eval_results.get("FN", "—")
-    threshold = eval_results.get("threshold_used", CONFIG.THRESHOLD)
+    threshold = eval_results.get("threshold_used", CONFIG.DEFAULT_THRESHOLD)
     best_t = eval_results.get("best_threshold", "—")
 
     st.markdown(

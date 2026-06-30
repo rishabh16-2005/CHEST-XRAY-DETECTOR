@@ -3,6 +3,7 @@ data/
 *.zip
 
 # ── Model checkpoints ─────────────────────────────────────────────
+all_outputs/
 checkpoints/
 *.pth
 

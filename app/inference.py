@@ -24,7 +24,7 @@ from typing import Dict, Optional, Tuple
 import torch
 from PIL import Image
 
-from src.config import CONFIG
+from src.config_nih import CONFIG_NIH as CONFIG
 from src.dataset import get_transforms
 from src.gradcam import get_gradcam_overlay
 from src.model import build_model, get_gradcam_target_layer
@@ -100,10 +100,12 @@ def predict(
     device: torch.device,
 ) -> Dict[str, float]:
     """
-    Run forward pass and return per-class probabilities.
+    Run forward pass and return per-class sigmoid probabilities.
 
-    The model outputs a single logit for binary classification. Sigmoid converts
-    this to P(PNEUMONIA). P(NORMAL) = 1 - P(PNEUMONIA).
+    For NIH 14-class multi-label classification the model outputs 14 logits.
+    Sigmoid (not softmax) converts each to an independent P(pathology).
+    A scan is "normal" when all 14 probabilities are below the display threshold —
+    there is no explicit "No Finding" output neuron.
 
     Args:
         model:        Loaded model from load_model() — must be in eval() mode.
@@ -111,19 +113,19 @@ def predict(
         device:       torch.device matching the model's device.
 
     Returns:
-        Dict mapping class name → probability, e.g.:
-        {"NORMAL": 0.23, "PNEUMONIA": 0.77}
-        All values in [0, 1], all values sum to 1.0 (binary case).
+        Dict mapping class_name → probability in [0, 1], e.g.:
+        {"Atelectasis": 0.12, "Cardiomegaly": 0.03, ..., "Hernia": 0.01}
     """
     image_tensor = image_tensor.to(device)
-    logit = model(image_tensor)                        # [1, 1]
-    pneumonia_prob = torch.sigmoid(logit).item()       # scalar
-    normal_prob = 1.0 - pneumonia_prob
+    logits = model(image_tensor)                        # [1, 14]
+    probs  = torch.sigmoid(logits).squeeze().tolist()   # [14] floats
 
-    return {
-        CONFIG.CLASS_NAMES[0]: round(normal_prob, 4),      # NORMAL
-        CONFIG.CLASS_NAMES[1]: round(pneumonia_prob, 4),   # PNEUMONIA
-    }
+    # squeeze() returns a scalar (not a list) when batch=1 AND num_classes=1.
+    # Guard against that edge-case if someone accidentally builds a 1-class model.
+    if not isinstance(probs, list):
+        probs = [probs]
+
+    return {cls: round(prob, 4) for cls, prob in zip(CONFIG.CLASS_NAMES, probs)}
 
 
 def get_top_prediction(predictions: Dict[str, float]) -> Tuple[str, float]:

@@ -45,12 +45,12 @@ from app.ui_components import (      # noqa: E402
     render_prediction_bars,
     render_sidebar,
 )
-from src.config import CONFIG
+from src.config_nih import CONFIG_NIH as CONFIG
 
 log = logging.getLogger(__name__)
 
 # ── Constants ─────────────────────────────────────────────────────────────────
-CHECKPOINT_PATH = Path("checkpoints/best_model.pth")
+CHECKPOINT_PATH = Path("all_outputs/checkpoints/nih_chestxray/best_model.pth")
 EVAL_RESULTS_PATH = Path("assets/evaluation_results.json")
 SAMPLE_DIR = Path("assets/sample_xrays")
 
@@ -186,14 +186,58 @@ def main():
     # ── Results header ────────────────────────────────────────────────────────
     st.markdown(f"**Source:** {image_source}")
 
-    detected = top_prob >= controls["threshold"]
-    badge_color = "#dc2626" if (top_class == CONFIG.CLASS_NAMES[1] and detected) else "#16a34a"
-    badge_text = f"{'🔴 PNEUMONIA DETECTED' if (top_class == CONFIG.CLASS_NAMES[1] and detected) else '🟢 NORMAL'} — {top_prob:.1%} confidence"
+    # NIH multi-label: a scan is "normal" when nothing clears the threshold
+    detected_classes = [
+        cls for cls, prob in predictions.items()
+        if prob >= controls["threshold"]
+    ]
+    detected_classes.sort(key=lambda c: predictions[c], reverse=True)
+
+    if detected_classes:
+        top_detected      = detected_classes[0]
+        top_detected_prob = predictions[top_detected]
+        badge_color       = "#dc2626"
+        is_normal         = False
+
+        if len(detected_classes) == 1:
+            badge_text = (
+                f"🔴 {top_detected.upper()} DETECTED "
+                f"— {top_detected_prob:.1%} confidence"
+            )
+        elif len(detected_classes) <= 3:
+            others     = ", ".join(detected_classes[1:])
+            badge_text = (
+                f"🔴 {top_detected.upper()} DETECTED "
+                f"— {top_detected_prob:.1%}  |  also: {others}"
+            )
+        else:
+            badge_text = (
+                f"🔴 {top_detected.upper()} DETECTED "
+                f"— {top_detected_prob:.1%}  |  +{len(detected_classes)-1} other findings"
+            )
+
+        # class_idx for the initial heatmap = top detected pathology
+        class_idx = list(predictions.keys()).index(top_detected)
+        top_class = top_detected   # keep top_class consistent for render_image_pair
+
+    else:
+        top_class, top_prob = get_top_prediction(predictions)
+        badge_color = "#16a34a"
+        badge_text  = (
+            f"🟢 NO FINDINGS DETECTED "
+            f"— highest: {top_class} {top_prob:.1%} "
+            f"(threshold: {controls['threshold']:.0%})"
+        )
+        is_normal = True
+        class_idx = list(predictions.keys()).index(top_class)
+
+    # ── THIS WAS THE MISSING LINE — badge was computed but never shown ─────────
     st.markdown(
-        f"<div style='background:{badge_color}22; border-left:4px solid {badge_color}; "
-        f"padding:10px 16px; border-radius:4px; margin-bottom:16px'>"
-        f"<strong style='color:{badge_color}; font-size:1.1rem'>{badge_text}</strong>"
-        f"</div>",
+        f"<div style='"
+        f"background:{badge_color}22; border-left:4px solid {badge_color}; "
+        f"padding:12px 16px; border-radius:6px; margin-bottom:12px; "
+        f"font-size:1.05rem; font-weight:600; color:{badge_color}'>"
+        f"{badge_text}</div>",
         unsafe_allow_html=True,
     )
 
@@ -203,23 +247,32 @@ def main():
 
     # ── Class selector for heatmap re-generation ──────────────────────────────
     with st.expander("🔁 Change which class the heatmap explains"):
-        new_class_idx = render_class_selector(predictions)
-        if new_class_idx != class_idx:
-            with st.spinner("Regenerating heatmap..."):
-                heatmap_pil, _ = generate_heatmap(
-                    model=model,
-                    pil_image=pil_image,
-                    class_idx=new_class_idx,
-                    device=device,
-                    alpha=controls["alpha"],
-                    colormap=controls["colormap"],
-                )
-            selected_class = CONFIG.CLASS_NAMES[new_class_idx]
-            st.image(
-                heatmap_pil,
-                caption=f"Grad-CAM for class: {selected_class}",
-                use_container_width=True,
+
+        if is_normal:
+            # Grad-CAM on a normal scan is meaningless — no class to back-propagate
+            st.info(
+                "No pathology detected above the threshold — "
+                "Grad-CAM requires a positive prediction to explain.\n\n"
+                "Lower the threshold in the sidebar to explore the scan anyway."
             )
+        else:
+            new_class_idx = render_class_selector(predictions)
+            if new_class_idx != class_idx:
+                with st.spinner("Regenerating heatmap..."):
+                    heatmap_pil, _ = generate_heatmap(
+                        model=model,
+                        pil_image=pil_image,
+                        class_idx=new_class_idx,
+                        device=device,
+                        alpha=controls["alpha"],
+                        colormap=controls["colormap"],
+                    )
+                selected_class = CONFIG.CLASS_NAMES[new_class_idx]
+                st.image(
+                    heatmap_pil,
+                    caption=f"Grad-CAM for class: {selected_class}",
+                    use_container_width=True,
+                )
 
     render_disclaimer()
 
