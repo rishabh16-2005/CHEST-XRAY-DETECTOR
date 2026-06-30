@@ -21,8 +21,8 @@ from PIL import Image
 
 # ── Page config — MUST be the first Streamlit call ────────────────────────────
 st.set_page_config(
-    page_title="Chest X-Ray Detector",
-    page_icon="🫁",
+    page_title="THORAEXPLAIN",
+    page_icon="🩻",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -159,7 +159,7 @@ def main():
     if pil_image is None:
         st.markdown(
             "<div style='text-align:center; color:#94a3b8; padding:60px 0'>"
-            "<p style='font-size:3rem'>🫁</p>"
+            "<p style='font-size:3rem'>🩻</p>"
             "<p>Upload a chest X-ray above to get started.</p>"
             "</div>",
             unsafe_allow_html=True,
